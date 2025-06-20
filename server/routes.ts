@@ -10,15 +10,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Fetching transactions from Notion...");
       
-      // Find the transactions database
-      const transactionsDb = await findDatabaseByTitle("Transactions");
-      if (!transactionsDb) {
+      // Find the expense tracker database
+      const expenseDb = await findDatabaseByTitle("Expense tracker");
+      if (!expenseDb) {
         return res.status(404).json({ 
-          message: "Transactions database not found. Please ensure you have a 'Transactions' database in your Notion page." 
+          message: "Expense tracker database not found. Please ensure you have an 'Expense tracker' database in your Notion page." 
         });
       }
 
-      const transactions = await getTransactionsFromNotion(transactionsDb.id);
+      const transactions = await getTransactionsFromNotion(expenseDb.id);
       
       // Group transactions by month
       const monthlyData = new Map();
@@ -111,12 +111,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { year, month } = req.params;
       const { search, category, amountRange, sortBy = 'date', sortOrder = 'desc' } = req.query;
 
-      const transactionsDb = await findDatabaseByTitle("Transactions");
-      if (!transactionsDb) {
-        return res.status(404).json({ message: "Transactions database not found" });
+      const expenseDb = await findDatabaseByTitle("Expense tracker");
+      if (!expenseDb) {
+        return res.status(404).json({ message: "Expense tracker database not found" });
       }
 
-      const allTransactions = await getTransactionsFromNotion(transactionsDb.id);
+      const allTransactions = await getTransactionsFromNotion(expenseDb.id);
       
       // Filter transactions for the specific month
       let monthTransactions = allTransactions.filter(transaction => {
@@ -202,12 +202,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Refresh transactions from Notion
   app.post("/api/transactions/refresh", async (req, res) => {
     try {
-      const transactionsDb = await findDatabaseByTitle("Transactions");
-      if (!transactionsDb) {
-        return res.status(404).json({ message: "Transactions database not found" });
+      const expenseDb = await findDatabaseByTitle("Expense tracker");
+      if (!expenseDb) {
+        return res.status(404).json({ message: "Expense tracker database not found" });
       }
 
-      const transactions = await getTransactionsFromNotion(transactionsDb.id);
+      const transactions = await getTransactionsFromNotion(expenseDb.id);
       res.json({ 
         message: "Transactions refreshed successfully", 
         count: transactions.length 

@@ -118,18 +118,43 @@ export async function getTransactionsFromNotion(transactionsDatabaseId: string) 
         return response.results.map((page: any) => {
             const properties = page.properties;
 
+            // Handle various possible property names and types flexibly
+            const getTextContent = (prop: any) => {
+                if (!prop) return null;
+                if (prop.title?.[0]?.plain_text) return prop.title[0].plain_text;
+                if (prop.rich_text?.[0]?.plain_text) return prop.rich_text[0].plain_text;
+                return null;
+            };
+
+            const getSelectValue = (prop: any) => {
+                return prop?.select?.name || null;
+            };
+
+            const getNumberValue = (prop: any) => {
+                return prop?.number?.toString() || "0";
+            };
+
+            const getDateValue = (prop: any) => {
+                return prop?.date?.start || new Date().toISOString();
+            };
+
+            // Try different common property names for flexibility
+            const description = getTextContent(properties.Name) || 
+                              getTextContent(properties.Title) || 
+                              getTextContent(properties.Description) || 
+                              "Untitled Transaction";
+
             return {
                 notionId: page.id,
-                date: properties.Date?.date?.start || new Date().toISOString(),
-                description: properties.Name?.title?.[0]?.plain_text || 
-                            properties.Description?.rich_text?.[0]?.plain_text || 
-                            "Untitled Transaction",
-                amount: properties.Amount?.number?.toString() || "0",
-                category: properties.Category?.select?.name || null,
-                paymentMethod: properties["Payment Method"]?.select?.name || 
-                             properties.PaymentMethod?.select?.name || null,
-                merchant: properties.Merchant?.rich_text?.[0]?.plain_text || null,
-                notes: properties.Notes?.rich_text?.[0]?.plain_text || null,
+                date: getDateValue(properties.Date) || getDateValue(properties.Created),
+                description: description,
+                amount: getNumberValue(properties.Amount) || getNumberValue(properties.Cost) || getNumberValue(properties.Price),
+                category: getSelectValue(properties.Category) || getSelectValue(properties.Type),
+                paymentMethod: getSelectValue(properties["Payment Method"]) || 
+                             getSelectValue(properties.PaymentMethod) || 
+                             getSelectValue(properties.Method),
+                merchant: getTextContent(properties.Merchant) || getTextContent(properties.Store) || getTextContent(properties.Vendor),
+                notes: getTextContent(properties.Notes) || getTextContent(properties.Comments),
             };
         });
     } catch (error) {
