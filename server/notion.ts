@@ -138,8 +138,9 @@ export async function getTransactionsFromNotion(transactionsDatabaseId: string) 
                 return prop?.date?.start || new Date().toISOString();
             };
 
-            // Try different common property names for flexibility
-            const description = getTextContent(properties.Name) || 
+            // Try different common property names for flexibility, including "Expense"
+            const description = getTextContent(properties.Expense) ||
+                              getTextContent(properties.Name) || 
                               getTextContent(properties.Title) || 
                               getTextContent(properties.Description) || 
                               "Untitled Transaction";
