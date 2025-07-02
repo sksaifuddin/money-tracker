@@ -35,7 +35,7 @@ A personal web application for visualizing spending data from a Notion database.
 
 ## Recent Changes
 
-### 2025-01-02: Next.js Migration Complete
+### 2025-01-02: Next.js Migration Complete & Deployment Ready
 ✓ Converted from React app to Next.js App Router structure
 ✓ Created API routes for monthly and detailed transaction data
 ✓ Implemented proper TypeScript configuration for Next.js
@@ -45,6 +45,9 @@ A personal web application for visualizing spending data from a Notion database.
 ✓ Added filtering, sorting, and search functionality
 ✓ Configured Tailwind CSS and shadcn/ui components
 ✓ Set up proper error handling and loading states
+✓ Removed conflicting Vite configuration files for clean deployment
+✓ Fixed ES module compatibility for PostCSS and Tailwind configs
+✓ Cleaned up project structure for Vercel deployment
 
 ### Environment Variables Required
 - `NOTION_INTEGRATION_SECRET`: Notion integration token
